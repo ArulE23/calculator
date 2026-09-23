@@ -11,4 +11,49 @@ html {
 body {
   margin: 0px;
   padding: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#main-container {
+  width: 500px;
+  height: 700px;
+  border: 3px solid black;
+  border-radius: 50px;
+  background-color: antiquewhite;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+#display {
+  height: 125px;
+  border: 2px solid black;
+  border-radius: 25px;
+  background-color: rgb(223, 223, 223);
+}
+
+#buttons {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.row > div {
+  flex: 1;
+  border: 1px solid black;
+  border-radius: 20px;
+}
+
+#equals {
+  flex: 2 1 10px;
 }
