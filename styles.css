@@ -30,9 +30,14 @@ body {
 
 #display {
   height: 125px;
+  padding: 10px;
   border: 2px solid black;
   border-radius: 25px;
   background-color: rgb(223, 223, 223);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 75px;
 }
 
 #buttons {
@@ -58,5 +63,5 @@ body {
 }
 
 #equals {
-  flex: 2 1 10px;
+  flex: 2 1 40px;
 }
