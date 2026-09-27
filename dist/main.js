@@ -5,6 +5,17 @@ function updateDisplay() {
         return;
     display.textContent = displayStr;
 }
+function parseDisplayNumbers() {
+    return displayStr
+        .split(/[\+\-\÷\×]/)
+        .filter(num => num != "")
+        .map(num => parseFloat(num));
+}
+function parseDisplayOperators() {
+    return displayStr
+        .split(/[0-9]+/)
+        .slice(0, -1);
+}
 const calcBtns = document.querySelectorAll(".row > button");
 for (const calcBtn of calcBtns) {
     calcBtn?.addEventListener("click", () => {
@@ -14,6 +25,7 @@ for (const calcBtn of calcBtns) {
 }
 const acBtn = document.querySelector("#ac");
 acBtn?.addEventListener("click", () => {
+    console.log(parseDisplayNumbers());
     displayStr = "";
     updateDisplay();
 });
