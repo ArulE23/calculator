@@ -7,10 +7,19 @@ function updateDisplay() {
 }
 function parseDisplayNumbers() {
     const numbers = displayStr.split(/[\+\-\÷\×]+/);
-    if (numbers.includes("")) {
-        throw "Syntax Error.";
+    for (let i = 0; i < numbers.length; i++) {
+        let num = numbers[i];
+        if (num == undefined) {
+            num = "";
+        }
+        // regex checks if any num string has more than one decimal point
+        if ((i != 0 && num == "") || /.*\..*\..*/.test(num)) {
+            throw "Syntax Error.";
+        }
     }
-    return numbers.map(num => parseFloat(num));
+    return numbers
+        .filter(num => num != "")
+        .map(num => parseFloat(num));
 }
 function parseDisplayOperators() {
     return displayStr

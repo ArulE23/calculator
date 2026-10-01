@@ -5,12 +5,21 @@ function updateDisplay() {
   display.textContent = displayStr;
 }
 
-function parseDisplayNumbers(): number[] {
+function parseDisplayNumbers() {
   const numbers = displayStr.split(/[\+\-\÷\×]+/);
-  if (numbers.includes("")) {
-    throw "Syntax Error.";
+  for (let i = 0; i < numbers.length; i++) {
+    let num = numbers[i];
+    if (num == undefined) {
+      num = "";
+    }
+    // regex checks if any num string has more than one decimal point
+    if ((i != 0 && num == "") || /.*\..*\..*/.test(num)) {
+      throw "Syntax Error.";
+    }
   }
-  return numbers.map(num => parseFloat(num));
+  return numbers
+    .filter(num => num != "")
+    .map(num => parseFloat(num));
 }
 
 function parseDisplayOperators(): string[] {
@@ -60,7 +69,7 @@ function sum() {
         const numSign = getNumSign(remainingOpStr);
         num = numSign * num;
       }
-      
+
       switch (operatorStr) {
         // "" accounts for case where no operator in front of first number
         case "":        
