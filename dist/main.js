@@ -45,18 +45,30 @@ function replaceFunc(matchSubStr, ...args) {
     }
 }
 function sum() {
-    if (/([\+\-]+|^)[\÷\×]|[\+\-\÷\×]$|.*\..*\..*/.test(displayStr)) {
+    // each regex checks for incorrect equation syntax:
+    // first regex checks for equations like: "÷5+1", "1-×2"
+    // second: "1+2-"
+    // third: "2.5.6+5"
+    if (/([\+\-]+|^)[\÷\×] | [\+\-\÷\×]$ | .*\..*\..*/.test(displayStr)) {
         displayStr = "Syntax Error!";
     }
+    // checks for any divisions by 0
     if (/[\÷][\+\-]*0/.test(displayStr)) {
         displayStr = "Can't divide by 0!";
     }
+    // regex checks for any divisons in equations and replaces
+    // them with its result
+    // e.g "-1+9÷3×-2" becomes "-1+3×-2"
     while (/[\-]?[\.0-9]+[\÷][\+\-]*[\.0-9]+/.exec(displayStr)) {
         displayStr = displayStr.replace(/[\-]?[0-9]+[\÷][\+\-]*[0-9]+/, replaceFunc);
     }
+    // replaces multiplcations with result
+    // e.g "-1+3×-2" => "-1+-6"
     while (/[\-]?[\.0-9]+[\×][\+\-]*[\.0-9]+/.exec(displayStr)) {
         displayStr = displayStr.replace(/[\-]?[\.0-9]+[\×][\+\-]*[\.0-9]+/, replaceFunc);
     }
+    // replaces additions and subtractions with result
+    // e.g "-1+-6" => "-7"
     while (/[\-]?[\.0-9]+[\+\-]+[\.0-9]+/.exec(displayStr)) {
         displayStr = displayStr.replace(/[\-]?[\.0-9]+[\+\-]+[\.0-9]+/, replaceFunc);
     }
