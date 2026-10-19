@@ -5,34 +5,13 @@ function updateDisplay() {
         return;
     display.textContent = displayStr;
 }
-function parseDisplayNumbers() {
-    const numbers = displayStr.split(/[\+\-\÷\×]+/);
-    for (let i = 0; i < numbers.length; i++) {
-        let num = numbers[i];
-        if (num == undefined) {
-            num = "";
-        }
-        // regex checks if any num string has more than one decimal point
-        if ((i != 0 && num == "") || /.*\..*\..*/.test(num)) {
-            throw "Syntax Error.";
-        }
-    }
-    return numbers
-        .filter(num => num != "")
-        .map(num => parseFloat(num));
-}
-function parseDisplayOperators() {
-    return displayStr
-        .split(/[\.0-9]+/)
-        .slice(0, -1);
-}
-// in a combination of "+" and "-" operators will simplify and return the
+// in a combination of "+" and "-" operator will simplify and return the
 // correct sign. e.g "--+-" = -1
 // cannot have multiplification or division symbol
 function getNumSign(remainingOpStr) {
-    if (remainingOpStr.includes("×") || remainingOpStr.includes("÷")) {
-        throw "Syntax Error";
-    }
+    // if (remainingOpStr.includes("×") || remainingOpStr.includes("÷")) {
+    //   throw "Syntax Error";
+    // }
     let sign = 1;
     for (const op of remainingOpStr) {
         if (op === "-") {
@@ -41,59 +20,62 @@ function getNumSign(remainingOpStr) {
     }
     return sign;
 }
+function divide(matchSubStr, ...args) {
+    const nums = matchSubStr.match(/(^[\-])?[0-9\.]+/g);
+    if (nums === null)
+        return "";
+    matchSubStr = matchSubStr.replace(/^\-/, "");
+    const operator = matchSubStr.match(/[\+\-\÷\×]+/);
+    if (operator == null)
+        return "";
+    const op = operator[0];
+    let total = nums.map(num => parseFloat(num))
+        .reduce((acc, curr) => acc / curr);
+    return `${total * getNumSign(op.slice(1))}`;
+}
+function multiply(matchSubStr, ...args) {
+    const nums = matchSubStr.match(/(^[\-])?[\.0-9]+/g);
+    if (nums === null)
+        return "";
+    matchSubStr = matchSubStr.replace(/^\-/, "");
+    const operator = matchSubStr.match(/[\+\-\÷\×]+/);
+    if (operator == null)
+        return "";
+    const op = operator[0];
+    let total = nums.map(num => parseFloat(num))
+        .reduce((acc, curr) => acc * curr);
+    return `${total * getNumSign(op.slice(1))}`;
+}
+function addSubtract(matchSubStr, ...args) {
+    const nums = matchSubStr.match(/(^[\-])?[\.0-9]+/g);
+    if (nums === null)
+        return "";
+    matchSubStr = matchSubStr.replace(/^\-/, "");
+    const operator = matchSubStr.match(/[\+\-\÷\×]+/);
+    if (operator == null)
+        return "";
+    const op = operator[0];
+    let total = nums.map(num => parseFloat(num))
+        .reduce((acc, curr) => acc + (curr * getNumSign(op)));
+    return `${total}`;
+}
 function sum() {
-    try {
-        let sum = 0;
-        // each operatorStr corresponds to a number in displayStr i.e:
-        // "1+2" = ["", "+"] & [1, 2] 
-        // "-1+2" = ["-", "+"] & [1, 2]
-        // "1÷--+-2" = ["", "×--+-"] & [1, 2]
-        const operators = parseDisplayOperators();
-        const numbers = parseDisplayNumbers();
-        for (let i = 0; i < numbers.length; i++) {
-            let operatorStr = operators[i];
-            let num = numbers[i];
-            if (num === undefined || operatorStr === undefined)
-                return;
-            // case where operator is like "×--+-"
-            if (operatorStr.length > 1) {
-                // operatorStr becomes first symbol = "×"
-                // remainingOpStr is rest of string = "--+-"
-                let remainingOpStr = operatorStr.slice(1);
-                operatorStr = operatorStr.slice(0, 1);
-                const numSign = getNumSign(remainingOpStr);
-                num = numSign * num;
-            }
-            switch (operatorStr) {
-                // "" accounts for case where no operator in front of first number
-                case "":
-                    sum += num;
-                    break;
-                case "+":
-                    sum += num;
-                    break;
-                case "-":
-                    sum -= num;
-                    break;
-                case "×":
-                    sum *= num;
-                    break;
-                case "÷":
-                    if (num == 0) {
-                        return "Cannot divide by 0.";
-                    }
-                    sum /= num;
-                    break;
-            }
-        }
-        if (sum % 1 !== 0) { // checks if sum is a float
-            return sum.toFixed(9);
-        }
-        return sum;
+    if (/([\+\-]+|^)[\÷\×]|[\+\-\÷\×]$|.*\..*\..*/.test(displayStr)) {
+        displayStr = "Syntax Error!";
     }
-    catch (err) {
-        return err;
+    if (/[\÷][\+\-]*0/.test(displayStr)) {
+        displayStr = "Can't divide by 0!";
     }
+    while (/[\-]?[\.0-9]+[\÷][\+\-]*[\.0-9]+/.exec(displayStr)) {
+        displayStr = displayStr.replace(/[\-]?[0-9]+[\÷][\+\-]*[0-9]+/, divide);
+    }
+    while (/[\-]?[\.0-9]+[\×][\+\-]*[\.0-9]+/.exec(displayStr)) {
+        displayStr = displayStr.replace(/[\-]?[\.0-9]+[\×][\+\-]*[\.0-9]+/, multiply);
+    }
+    while (/[\-]?[\.0-9]+[\+\-]+[\.0-9]+/.exec(displayStr)) {
+        displayStr = displayStr.replace(/[\-]?[\.0-9]+[\+\-]+[\.0-9]+/, addSubtract);
+    }
+    return displayStr;
 }
 const calcBtns = document.querySelectorAll(".row > button");
 for (const calcBtn of calcBtns) {
@@ -118,7 +100,7 @@ delBtn?.addEventListener("click", () => {
 });
 const equalsBtn = document.querySelector("#equals");
 equalsBtn?.addEventListener("click", () => {
-    displayStr = `${sum()}`;
+    sum();
     updateDisplay();
 });
 export {};
