@@ -1,8 +1,9 @@
 let displayStr = "";
 const display = document.querySelector("#display");
-function updateDisplay() {
+function updateDisplay(reverse) {
     if (!display)
         return;
+    display.style.flexDirection = reverse ? "row-reverse" : "row";
     display.textContent = displayStr;
 }
 // in a combination of "+" and "-" operator will simplify and return the
@@ -49,7 +50,7 @@ function sum() {
     // first regex checks for equations like: "÷5+1", "1-×2"
     // second: "1+2-"
     // third: "2.5.6+5"
-    if (/([\+\-]+|^)[\÷\×] | [\+\-\÷\×]$ | .*\..*\..*/.test(displayStr)) {
+    if (/([\+\-]+|^)[\÷\×]|[\+\-\÷\×]$|.*\..*\..*/.test(displayStr)) {
         displayStr = "Syntax Error!";
     }
     // checks for any divisions by 0
@@ -81,26 +82,34 @@ for (const calcBtn of calcBtns) {
             displayStr = "";
         }
         displayStr += calcBtn.value;
-        updateDisplay();
+        updateDisplay(true);
     });
 }
 const acBtn = document.querySelector("#ac");
 acBtn?.addEventListener("click", () => {
     displayStr = "";
-    updateDisplay();
+    updateDisplay(true);
 });
 const delBtn = document.querySelector("#del");
 delBtn?.addEventListener("click", () => {
     displayStr = displayStr.slice(0, -1);
-    updateDisplay();
+    updateDisplay(true);
 });
 const equalsBtn = document.querySelector("#equals");
 equalsBtn?.addEventListener("click", () => {
     sum();
-    updateDisplay();
+    updateDisplay(false);
 });
 window.addEventListener("keydown", (event) => {
     switch (event.key) {
+        case "=":
+            sum();
+            updateDisplay(false);
+            return;
+        case "Enter":
+            sum();
+            updateDisplay(false);
+            return;
         case "Backspace":
             displayStr = displayStr.slice(0, -1);
             break;
@@ -109,12 +118,6 @@ window.addEventListener("keydown", (event) => {
             break;
         case "C":
             displayStr = "";
-            break;
-        case "=":
-            sum();
-            break;
-        case "Enter":
-            sum();
             break;
         case "/":
             displayStr += "÷";
@@ -127,7 +130,7 @@ window.addEventListener("keydown", (event) => {
                 displayStr += event.key;
             }
     }
-    updateDisplay();
+    updateDisplay(true);
 });
 export {};
 //# sourceMappingURL=main.js.map
