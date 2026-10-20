@@ -23,7 +23,7 @@ function getNumSign(remainingOpStr: string): number {
 }
 
 function replaceFunc(matchSubStr: string, ...args: any[]) {
-  const nums = matchSubStr.match(/(^[\-])?[0-9\.]+/g);
+  const nums = matchSubStr.match(/(^[\-])?[\.0-9]+/g);
   if (nums === null) return "";
 
   matchSubStr = matchSubStr.replace(/^\-/, "");
@@ -64,7 +64,7 @@ function sum() {
   // them with its result
   // e.g "-1+9÷3×-2" becomes "-1+3×-2"
   while(/[\-]?[\.0-9]+[\÷][\+\-]*[\.0-9]+/.exec(displayStr)) {
-    displayStr = displayStr.replace(/[\-]?[0-9]+[\÷][\+\-]*[0-9]+/, replaceFunc);
+    displayStr = displayStr.replace(/[\-]?[\.0-9]+[\÷][\+\-]*[\.0-9]+/, replaceFunc);
   }
   // replaces multiplcations with result
   // e.g "-1+3×-2" => "-1+-6"
@@ -132,7 +132,7 @@ window.addEventListener("keydown", (event) => {
       displayStr += "×";
       break;
     default:
-      if (/[\.\d\+\-]/.test(event.key)) {
+      if (/^[\.\d\+\-]$/.test(event.key)) {
         displayStr += event.key;
       }
   }
