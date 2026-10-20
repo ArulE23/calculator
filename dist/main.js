@@ -99,5 +99,35 @@ equalsBtn?.addEventListener("click", () => {
     sum();
     updateDisplay();
 });
+window.addEventListener("keydown", (event) => {
+    switch (event.key) {
+        case "Backspace":
+            displayStr = displayStr.slice(0, -1);
+            break;
+        case "c":
+            displayStr = "";
+            break;
+        case "C":
+            displayStr = "";
+            break;
+        case "=":
+            sum();
+            break;
+        case "Enter":
+            sum();
+            break;
+        case "/":
+            displayStr += "÷";
+            break;
+        case "*":
+            displayStr += "×";
+            break;
+        default:
+            if (/[\.\d\+\-]/.test(event.key)) {
+                displayStr += event.key;
+            }
+    }
+    updateDisplay();
+});
 export {};
 //# sourceMappingURL=main.js.map
